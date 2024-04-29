@@ -35,12 +35,7 @@ router.post("/leads", async (req, res) => {
 // GET request to retrieve leads from the database
 router.get("/leads", async (req, res) => {
   try {
-    // const query = {};
-    // const options = {
-    //   , // Assuming _id field is used for timestamps
-    //   limit: 10,
-    // };
-    const leads = await Lead.find().sort({ date: -1 }).limit(10000);
+    const leads = await Lead.find({});
     res.status(200).json(leads);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving leads", error });
@@ -207,11 +202,11 @@ router.post("/trial-leads", async (req, res) => {
     } = req.body;
     const filterQuery = {
       $and: [
-        filtername.length > 0 ? { name: { $regex: filtername } } : {},
+        filtername.length > 0 ? { name: { $in: filtername } } : {},
 
         filtersource.length > 0 ? { source: { $in: filtersource } } : {},
 
-        filterPhone.length > 0 ? { mobile: { $regex: filterPhone } } : {},
+        filterPhone.length > 0 ? { mobile: { $in: filterPhone } } : {},
 
         filterstatus.length > 0 ? { status: { $in: filterstatus } } : {},
 
@@ -221,11 +216,11 @@ router.post("/trial-leads", async (req, res) => {
 
         filtercourse.length > 0 ? { course: { $in: filtercourse } } : {},
 
-        filteraddress.length > 0 ? { address: { $regex: filteraddress } } : {},
+        filteraddress.length > 0 ? { address: { $in: filteraddress } } : {},
 
         filteAction.length > 0 ? { action: { $in: filteAction } } : {},
 
-        date[0] || date[1]
+        date.length > 0
           ? {
               date: {
                 $gte: date[0],
@@ -234,7 +229,7 @@ router.post("/trial-leads", async (req, res) => {
             }
           : {},
 
-        assign_date[0] || assign_date[1]
+        assign_date.length > 0
           ? {
               modified_date: {
                 $gte: assign_date[0],
@@ -252,10 +247,6 @@ router.post("/trial-leads", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Internal Server Error" });
   }
-});
-
-router.post("/test", async (req, res) => {
-  res.json("accepted");
 });
 
 // router.post("/filter-leads", async (req, res) => {
